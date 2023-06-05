@@ -1,7 +1,6 @@
 ![Logo](img/Logo.png)
 
 # NESCGLE.jl project
-[![DOI](https://zenodo.org/badge/429870312.svg)](https://zenodo.org/badge/latestdoi/429870312)
 
 In this simple repository written in [Julia](https://julialang.org/) you can find a set of routines created so that any kind of user new to liquid theory will be able to evaluate the equations of the NE-SCGLE.
 
