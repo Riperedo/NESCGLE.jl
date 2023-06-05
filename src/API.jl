@@ -14,8 +14,6 @@ k:lkkOX  0o:,''''''':O  Fuera del Equilibrio
    XKOkkko;''''';lO     HandsOn NE-SCGLE Version 0.02
       KOOkxlccld0       (11-05-2023)"
 
-println(logo)
-
 CodeMap = "NE-SCGLE
   │
   ├─SCGLE
