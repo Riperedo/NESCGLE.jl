@@ -142,8 +142,8 @@
 				bI = b⁻¹(τ, Δζ)
 				# Saving data
 				if t == tw_aux[end] || m == 1
-					save_data(path*"/input_step"*string(m)*"_"*string(index_save[end]+1)*".dat", [k S], header = "1 k\t2 S(k)", flag = false)
-					save_data(path*"/fs_step"*string(m)*"_"*string(index_save[end]+1)*".dat", [τ fs f Δζ Δη D W], header = "1 τ\t2 Fs\t3 F\t4 Δζ\t5 Δη\t6 D\t7 W", flag = false)
+					save_data(path*"/input"*string(index_save[end]+1)*".dat", [k S], header = "1 k\t2 S(k)", flag = false)
+					save_data(path*"/fs"*string(index_save[end]+1)*".dat", [τ fs f Δζ Δη D W], header = "1 τ\t2 Fs\t3 F\t4 Δζ\t5 Δη\t6 D\t7 W", flag = false)
 					append!(index_save, index_save[end]+1)
 					append!(t_save, t_m[m]+t)
 					#append!(u_save, u)
@@ -215,8 +215,8 @@
 			S = structure_factor(I_NE)
 			k = wave_vector(I_NE)
 			τ, f, fs, Δζ, Δη, D, W = SCGLE(I_NE; dt = 1e-10, nT = 5, decimations = 100)
-			save_data(path*"/input_step"*string(M)*"_"*string(index_save[end]+1)*".dat", [k S], header = "1 k\t2 S(k)", flag = false)
-			save_data(path*"/fs_step"*string(M)*"_"*string(index_save[end]+1)*".dat", [τ fs f Δζ Δη D W], header = "1 τ\t2 Fs\t3 F\t4 Δζ\t5 Δη\t6 D\t7 W", flag = false)
+			save_data(path*"/input"*string(index_save[end]+1)*".dat", [k S], header = "1 k\t2 S(k)", flag = false)
+			save_data(path*"/fs"*string(index_save[end]+1)*".dat", [τ fs f Δζ Δη D W], header = "1 τ\t2 Fs\t3 F\t4 Δζ\t5 Δη\t6 D\t7 W", flag = false)
 			# Update bI
 			bI = b⁻¹(τ, Δζ)
 			# Saving data
