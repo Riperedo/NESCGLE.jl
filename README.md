@@ -6,11 +6,35 @@ In this simple repository written in [Julia](https://julialang.org/) you can fin
 
 All the code works through APIs and is very easy to use.
 
+## Install
+
+The most easy way to install the present package is write into the julia prompt the button `]` to enter into the pkg manager enviroment.
+```julia
+(@vX.X) pkg> add "https://github.com/Riperedo/NESCGLE.jl.git"
+```
+abd you must observe something like this as a response
+```
+   Updating git-repo `https://github.com/Riperedo/NESCGLE.jl.git`
+   Resolving package versions...
+    Updating `C:\Users\jinzo\.julia\environments\v1.8\Project.toml`
+  [901f7455] + NESCGLE v0.1.0 `https://github.com/Riperedo/NESCGLE.jl.git#main`
+    Updating `C:\Users\jinzo\.julia\environments\v1.8\Manifest.toml`
+  [901f7455] + NESCGLE v0.1.0 `https://github.com/Riperedo/NESCGLE.jl.git#main`
+  [8bb1440f] + DelimitedFiles
+Precompiling project...
+  1 dependency successfully precompiled in 2 seconds. 52 already precompiled.
+```
+in order to check ig the instalation was correct just type
+```julia
+julia> using NESCGLE
+```
+and if no errors appear then your instalation was sussesful.
+
 ## Static structure factor
 
 Inside a file with `.jl` ending type the following
 ```julia
-include("src/API.jl")
+using NESCGLE
 
 # Input_HS(ϕ :: Float64, k :: Array{Float64}; VW = false :: Bool)
 k = collect(0.0:0.1:15*π)
