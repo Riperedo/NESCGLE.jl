@@ -12,7 +12,7 @@ The most easy way to install the present package is write into the julia prompt 
 ```julia
 (@vX.X) pkg> add "https://github.com/Riperedo/NESCGLE.jl.git"
 ```
-abd you must observe something like this as a response
+and you must observe something like this as a response
 ```
    Updating git-repo `https://github.com/Riperedo/NESCGLE.jl.git`
    Resolving package versions...
