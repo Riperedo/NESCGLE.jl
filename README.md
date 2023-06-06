@@ -2,7 +2,7 @@
 
 # NESCGLE.jl project
 
-In this simple repository written in [Julia](https://julialang.org/) you can find a set of routines created so that any kind of user new to liquid theory will be able to evaluate the equations of the NE-SCGLE.
+In this simple repository written in [Julia](https://julialang.org/) you can find a set of routines created so that any kind of user new to liquid theory will be able to evaluate the equations of the [NE-SCGLE](https://doi.org/10.1103/PhysRevE.82.061503) theoretical framework.
 
 All the code works through APIs and is very easy to use.
 
