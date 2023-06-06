@@ -96,18 +96,6 @@ InstantaneousProcess(I, F)
 ```
 In your terminal, you will find information about the status of the process:
 ```
-     0xlccoxkO0K
-   kl;''''';okkkOK      #  ### #  # # #   # ### ###
- Oc,''''''''l00kkkkx0   #  # # ## # # ## ## #   #
-k;''''''',:oK  XOkkl:O  #  ### # ## # # # # ##  ##
-:'''',cdk0X     Kkx:'cK ## # # #  # # #   # #   ###
-''',ck          Xkl,',k
-'',lOX          kc,'';k Laboratorio Nacional de la
-:'cxkK     X0Odc,''''cK Ingeniería de la Materia
-k:lkkOX  0o:,''''''':O  Fuera del Equilibrio
- Oxkkkk00c'''''''',l0
-   XKOkkko;''''';lO     HandsOn NE-SCGLE Version 0.02
-      KOOkxlccld0       (11-05-2023)
 Start
 index = 0, tw = 0.0
 index = 1, tw = 1.0e-6
