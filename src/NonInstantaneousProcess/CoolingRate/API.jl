@@ -1,5 +1,6 @@
 include("../../InstantaneousProcess/API.jl")
 
+#=
 """`Time_grid(tp :: Float64, np :: Int64, decades :: Int64)`
 Splits the time array grid into three different intervals.
 # Arguments
@@ -15,6 +16,7 @@ function Time_grid(tp :: Float64, np :: Int64, decades :: Int64)
 	mid_time = t[t .> t_early[end] .&& t .< t_late[1]]
 	return t_early, mid_time, t_late
 end
+=#
 
 """`Temperature_grid(α :: Float64, Ti :: Float64, Tf :: Float64, t :: Array{Float64})`
 Evaluates the temeprature grid as a function of a cooling rate `α`.
