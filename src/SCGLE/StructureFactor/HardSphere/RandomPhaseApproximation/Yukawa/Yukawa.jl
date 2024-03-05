@@ -11,5 +11,5 @@ Auxiliar function to compute the Fourier Transform of Yukawa potential[1].
 [1] Yukawa, H. (1935). "On the interaction of elementary particles". Proc. Phys.-Math. Soc. Jpn. 17: 48.
 """
 function βU_Yukawa(A :: Float64, z :: Float64, k :: Float64)
-	return -4*π*A*(k*cos(k) + z*sin(k))/(k*(k^2+z^2))
+	return 4*π*A*(k*cos(k) + z*sin(k))/(k*(k^2+z^2))
 end
