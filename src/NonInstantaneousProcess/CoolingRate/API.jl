@@ -31,7 +31,7 @@ function Temperature_grid(α :: Float64, Ti :: Float64, Tf :: Float64, t :: Arra
 	return f.(t)
 end
 
-"""`cooling_rate(α :: Float64, I :: Input_SCGLE, F :: Input_SCGLE, k :: Array{Float64}; np = 10 :: Int64, decades = 120 :: Int64, mute = false, save_path = "cooling_rate", label = "T" :: String)`
+"""`cooling_rate(α :: Float64, I :: Input_SCGLE, F :: Input_SCGLE; np = 10 :: Int64, decades = 120 :: Int64, mute = false, save_path = "cooling_rate", label = "T" :: String)`
 Perform a cooling down following a cooling rate `α` using equaly spaced `M` steps.
 # Arguments
 - `α :: Float64`: cooling rate.
