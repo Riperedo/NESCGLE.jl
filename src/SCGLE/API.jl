@@ -209,7 +209,7 @@ function Asymptotic(I :: Input_SCGLE; flag = true :: Bool)
 	ϕ = volume_fraction(I)
 	k = wave_vector(I)
 	S = structure_factor(I)
-	return Asymptotic(ϕ, k, S; flag= true)
+	return Asymptotic(ϕ, k, S; flag= flag)
 end
 
 # TODO DHS, Mixtures
