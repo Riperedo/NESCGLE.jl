@@ -34,7 +34,7 @@ Auxiliar fucntion to concat two grids.
 """
 function grid_plus_grid(x :: Array{Float64}, y :: Array{Float64}) 
 	@assert x[end] <= y[1] "The first grid must have a domain lower than the second one. 
-	The last element of the first grid is "*string(x[end])*" and the first element for the second array is "*string(y[1])*"."
+	The last element of the first grid is "*string(x[end])*", and the first element for the second array is "*string(y[1])*"."
 	return unique!(vcat(x, y))
 end
 
@@ -45,8 +45,8 @@ end
 """`Input_SCGLE`
 Input to evaluate the equation of the Self-Consistent Generalized Langevin Equation theory.
 # Fields
-- `params :: Array{Float64}`: list of parameters to define the system of interest. The first parameter in params array must be the volume fraction and the Second use to be the Temperature.
-- `S :: Function`: Fucntion to generate the static structure factor.
+- `params :: Array{Float64}`: list of parameters to define the system of interest. The first parameter in the params array must be the volume fraction, and the Second must be the Temperature.
+- `S :: Function`: Function to generate the static structure factor.
 - `k :: Array{Float64}`: wave vector grid.
 - `system :: String`: system identifier.
 """
@@ -64,7 +64,7 @@ wave_vector(I :: Input_SCGLE) = I.k
 @doc """Returns an array with the Static Structure Factor from an input
 """
 structure_factor(I :: Input_SCGLE) = I.S.(I.k)
-@doc """Returns a function to contruct the Static Structure Factor from an input
+@doc """Returns a function to construct the Static Structure Factor from an input
 """
 structure_factor_function(I :: Input_SCGLE) = I.S
 @doc """Returns the parameters from an input
@@ -155,7 +155,7 @@ function Input_SALR(ϕ :: Float64, ϵ₁ :: Float64, z₁ :: Float64, ϵ₂ :: F
 end
 
 """`Input_AO(ϕ :: Float64, ϕₚ⁽ᴿ⁾  :: Float64, ξ :: Float64, k :: Array{Float64})`
-Constructor for an input of a mixture of colloid-polimer in the monodisperse approxiamtion[1].
+Constructor for an input of a mixture of colloid-polimers in the monodisperse approximation [1].
 # Arguments
 - `ϕ :: Float64`: Volume fraction of the colloid.
 - `ϕₚ⁽ᴿ⁾ :: Float64`: Volume fraction of the polimer.
@@ -171,21 +171,38 @@ function Input_AO(ϕ :: Float64, ϕₚ⁽ᴿ⁾  :: Float64, ξ :: Float64, k ::
 	return Input_SCGLE(params, S, k, "AsakuraOosawa2")
 end
 
+"""`Input_StikyHS(ϕ :: Float64, τ :: Float64, k :: Array{Float64})`
+Constructor of an input for a Hard Sphere system.
+# Arguments
+- `ϕ :: Float64`: volume fraction.
+- `τ :: Float64`: .
+- `k :: Array{Float64}`: wave vector array.
+# References
+[1]
+
+Contributed by O. Joaquín-Jaime
+"""
+function Input_StickyHS(ϕ :: Float64, τ :: Float64, k :: Array{Float64})
+	S = S_HS_Sticky(ϕ, τ)
+	return Input_SCGLE([ϕ, τ], S, k, "StickyHS")
+end
+
+
 #################
 #	Dynamics	#
 #################
 
 """`SCGLE(I :: Input_SCGLE; dt = 1e-10 :: Float64, nT = 6 :: Int64, decimations = 50 :: Int, flag = false)`
-Computes de dynamic evolution from a structural input of a colloidal system using the Self-Consistent Generalized Langevin Equation theory[1]. This function returns a set of arrays that contains the correlation time, the self and collective Intermediate Scatering Function, the friction memory function, the shear viscosisty relaxation, the diffusion coefficient and the mean squared displacement.
+Computes the dynamic evolution from a structural input of a colloidal system using the Self-Consistent Generalized Langevin Equation theory[1]. This function returns a set of arrays that contains the correlation time, the self and collective Intermediate Scatering Function, the friction memory function, the shear viscosisty relaxation, the diffusion coefficient and the mean squared displacement.
 # Arguments
 - `I :: Input_SCGLE`: Structural input.
 # Keywords
 - `dt = 1e-10 :: Float64`: Initial time step.
-- `nT = 6 :: Int64`: Auxiliar number to set the number of intemediate steps.
+- `nT = 6 :: Int64`: Auxiliar number to set the number of intermediate steps.
 - `decimations = 50 :: Int`: Number of decades to perform.
 - `flag = false`: flag to print internal dynamics procedure.
 # References
-[1] Laura Yeomans-Reyna and Magdaleno Medina-Noyola. Overdamped van hove function of colloidal suspensions. Physical Review E - Statistical Physics, Plasmas, Fluids, and Related Interdisciplinary Topics, pages 3382–3399, September 2000.
+[1] Laura Yeomans-Reyna and Magdaleno Medina-Noyola. Overdamped van Hove function of colloidal suspensions. Physical Review E - Statistical Physics, Plasmas, Fluids, and Related Interdisciplinary Topics, pages 3382–3399, September 2000.
 """
 function SCGLE(I :: Input_SCGLE; dt = 1e-10 :: Float64, nT = 6 :: Int64, 
 	decimations = 50 :: Int, flag = false)
@@ -199,7 +216,7 @@ function SCGLE(I :: Input_SCGLE; dt = 1e-10 :: Float64, nT = 6 :: Int64,
 end
 
 """`Asymptotic(I :: Input_SCGLE; flag = true :: Bool)`
-Compute the asymptotic dynaimics for a given structural input.
+Compute the asymptotic dynamics for a given structural input.
 # Arguments
 - `I :: Input_SCGLE`: Structural input.
 # Keywords
