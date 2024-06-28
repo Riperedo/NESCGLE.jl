@@ -1,4 +1,4 @@
-# API application programming interface for computing the different structure factors programed.
+# API application programming interface for computing the different structure factors programmed.
 
 # Hard Spheres
 include("HardSphere/PercusYevick/PercusYevick.jl")
@@ -113,13 +113,13 @@ include("HardSphere/RandomPhaseApproximation/Yukawa/Yukawa.jl")
 include("HardSphere/RandomPhaseApproximation/AsakuraOosawa/AsakuraOosawa.jl")
 
 """`βU(params :: Array{Float64}, k :: Float64, name :: String)`
-Auxiliar function to return the Fourier Transform of the pair interaction portential to evaluate the Random Phase Approximation[1].
+Auxiliary function to return the Fourier Transform of the pair interaction potential to evaluate the Random Phase Approximation[1].
 # Arguments
 - `params :: Array{Float64}`: List of parameters to evaluate the potential.
 - `k :: Float64`: Wave vector.
 - `name :: String`: Potential name selector.
 # References
-[1] R.V. Sharma and K.C. Sharma. The structure factor and the transport properties of dense fluids having molecules with square well potential, a possible generalization. Physica A: Statistical Mechanics and its Applications, 89(1):213–218, 1977
+[1] R.V. Sharma and K.C. Sharma. The structure factor and the transport properties of dense fluids having molecules with square well potential are possible generalizations. Physica A: Statistical Mechanics and its Applications, 89(1):213–218, 1977
 """
 function βU(params :: Array{Float64}, k :: Float64, name :: String)
 	Potentials = Dict(
@@ -143,7 +143,7 @@ function IS_RPA(params :: Vector{Float64}, k :: Float64; potential = "")
 end
 
 """`S_RPA(params :: Vector{Float64}, k :: Float64; potential = "")`
-Returns the static structure factor usign the random phase approximation[1] of the form
+Returns the static structure factor using the random phase approximation[1] of the form
 ```math
 S(k) - \\frac{1}{1 - 24\\phi c(k) - \\phi\\beta u(k)}
 ```
@@ -154,14 +154,14 @@ where βu(k) is the Fourier transform of the pair interaction potential.
 # Keywords
 - `potential = "" :: String`: Potential name selector.
 # References
-[1] R.V. Sharma and K.C. Sharma. The structure factor and the transport properties of dense fluids having molecules with square well potential, a possible generalization. Physica A: Statistical Mechanics and its Applications, 89(1):213–218, 1977
+[1] R.V. Sharma and K.C. Sharma. The structure factor and the transport properties of dense fluids having molecules with square well potential are possible generalizations. Physica A: Statistical Mechanics and its Applications, 89(1):213–218, 1977
 """
 function S_RPA(params :: Vector{Float64}, k :: Float64; potential = "")
 	return 1/IS_RPA(params, k, potential = potential)
 end
 
 """`structure_factor(params :: Vector{Float64}, potential = "")`
-Returns a function to compute the static structure factor usign the random phase approximation[1] of the form
+Returns a function to compute the static structure factor using the random phase approximation[1] of the form
 ```math
 S(k) - \\frac{1}{1 - 24\\phi c(k) - \\phi\\beta u(k)}
 ```
@@ -171,7 +171,7 @@ where βu(k) is the Fourier transform of the pair interaction potential.
 # Keywords
 - `potential = "" :: String`: Potential name selector.
 # References
-[1] R.V. Sharma and K.C. Sharma. The structure factor and the transport properties of dense fluids having molecules with square well potential, a possible generalization. Physica A: Statistical Mechanics and its Applications, 89(1):213–218, 1977
+[1] R.V. Sharma and K.C. Sharma. The structure factor and the transport properties of dense fluids having molecules with square well potential are possible generalizations. Physica A: Statistical Mechanics and its Applications, 89(1):213–218, 1977
 """
 function S_RPA(params :: Vector{Float64}; potential = "")
 	Params = [i<=length(params) ? params[i] : 1.0 for i in 1:5]
@@ -180,7 +180,7 @@ function S_RPA(params :: Vector{Float64}; potential = "")
 end
 
 """`S_RPA(params :: Vector{Float64}, k :: Vector{Float64}; potential = "")`
-Returns an aray with the static structure factor usign the random phase approximation[1] of the form
+Returns an array with the static structure factor using the random phase approximation[1] of the form
 ```math
 S(k) - \\frac{1}{1 - 24\\phi c(k) - \\phi\\beta u(k)}
 ```
@@ -191,24 +191,45 @@ where βu(k) is the Fourier transform of the pair interaction potential.
 # Keywords
 - `potential = "" :: String`: Potential name selector.
 # References
-[1] R.V. Sharma and K.C. Sharma. The structure factor and the transport properties of dense fluids having molecules with square well potential, a possible generalization. Physica A: Statistical Mechanics and its Applications, 89(1):213–218, 1977
+[1] R.V. Sharma and K.C. Sharma. The structure factor and the transport properties of dense fluids having molecules with square well potential are possible generalizations. Physica A: Statistical Mechanics and its Applications, 89(1):213–218, 1977
 """
 function S_RPA(params :: Vector{Float64}, k :: Vector{Float64}; potential = "")
 	return S_RPA(params, potential = potential).(k)
+end
+
+
+include("HardSphere/StickyHS/StickyHS.jl")
+
+@doc """
+`S_HS_Sticky(τ::Float64, ϕ::Float64, k::Float64)`
+Computes the static structure factor of a Stucky Hard Sphere.
+# Arguments
+- `τ::Float64`: .
+- `ϕ::Float64`: Volume fraction.
+- `k::Float64`: Wave vector.
+# References
+[1] 
+
+Contributed by O. Joquín'Jaime
+"""
+function S_HS_Sticky(ϕ::Float64, τ::Float64)
+	f(x) = S_HS_Sticky(ϕ, τ, x)
+	return f
 end
 
 """`structure_factor(params :: Vector{Float64}, system = "")`
 Returns a function to construct the static structure factor for a given `system`. The systems that are already programmed are:
 * "": HS for PY[1].
 * "VW": HS under VW approximation[2].
-* "WCA": SS under the blip fucntin approximation[3].
+* "WCA": SS under the blip function approximation[3].
 * "SquareWell": Potential under the RPA.
 * "Yukawa": Potential under the RPA.
 * "SALR": Potential under the RPA.
 * "AsakuraOosawa1": Potential under the RPA.
 * "AsakuraOosawa2": Potential under the RPA.
+* "StickyHS": Sticky Hard Sphere.
 # Arguments
-- `params :: Vector{Float64}`: list of parameters to evalaute the potential
+- `params :: Vector{Float64}`: list of parameters to evaluate the potential
 # Keywords
 - `system = ""`: System of interest
 # Abbreviations
@@ -220,14 +241,16 @@ Returns a function to construct the static structure factor for a given `system`
 [1] J. P. Hansen and I. McDonald. Theory of Simple Liquids. Academic, London, 1990.
 [2] Loup Verlet and Jean-Jacques Weis. Phys. Rev. A 5, 939 – Published 1 February 1972
 [3] Luis Enrique Sánchez-Díaz, Pedro Ramírez-González, and Magdaleno Medina-Noyola Phys. Rev. E 87, 052306 – Published 22 May 2013
-[4] R.V. Sharma and K.C. Sharma. The structure factor and the transport properties of dense fluids having molecules with square well potential, a possible generalization. Physica A: Statistical Mechanics and its Applications, 89(1):213–218, 1977
+[4] R.V. Sharma and K.C. Sharma. The structure factor and the transport properties of dense fluids having molecules with square well potential are possible generalizations. Physica A: Statistical Mechanics and its Applications, 89(1):213–218, 1977
 """
 function structure_factor(params :: Vector{Float64}, system = "")
 	if system == ""
 		return S_HS_PY(params[1])
 	elseif system == "VW"
 		return S_HS_VW(params[1])
-	elseif system == "WCA"
+	elseif system == "StickyHS"
+		return S_HS_Sticky(params[1], params[2])
+	elseif system == "WCA"	
 		return S_WCA_blip(params[1], params[2]; ν = params[3])
 	elseif system in ["SquareWell", "Yukawa", "SALR", "AsakuraOosawa1", "AsakuraOosawa2"]
 		return S_RPA(params, potential = system)
