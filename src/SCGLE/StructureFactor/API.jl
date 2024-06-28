@@ -204,7 +204,7 @@ include("HardSphere/StickyHS/StickyHS.jl")
 `S_HS_Sticky(τ::Float64, ϕ::Float64, k::Float64)`
 Computes the static structure factor of a Stucky Hard Sphere.
 # Arguments
-- `τ::Float64`: .
+- `τ::Float64`: Temperature.
 - `ϕ::Float64`: Volume fraction.
 - `k::Float64`: Wave vector.
 # References
