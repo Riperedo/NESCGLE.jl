@@ -2,15 +2,15 @@
 `IS_HS_Sticky(τ::Float64, ϕ::Float64, k::Float64)`
 Computes the inverse of the static structure factor of a Stucky Hard Sphere.
 # Arguments
-- `τ::Float64`: .
+- `τ::Float64`: Temperature.
 - `ϕ::Float64`: Volume fraction.
 - `k::Float64`: Wave vector.
 # References
 [1] 
 
-Contributed by O. Joquín'Jaime
+Contributed by O. Joquín-Jaime
 """
-function IS_HS_Sticky(τ::Float64, ϕ::Float64, k::Float64)
+function IS_HS_Sticky(ϕ::Float64, τ::Float64,, k::Float64)
     # Baxter factorization parameters
     c = (1.0 + 0.5 * ϕ) / (1.0 - ϕ)^2
     b = (ϕ / (1.0 - ϕ)) + τ
@@ -41,7 +41,7 @@ end
 `S_HS_Sticky(τ::Float64, ϕ::Float64, k::Float64)`
 Computes the static structure factor of a Stucky Hard Sphere.
 # Arguments
-- `τ::Float64`: .
+- `τ::Float64`: Temperature.
 - `ϕ::Float64`: Volume fraction.
 - `k::Float64`: Wave vector.
 # References
@@ -49,4 +49,4 @@ Computes the static structure factor of a Stucky Hard Sphere.
 
 Contributed by O. Joquín'Jaime
 """
-S_HS_Sticky(τ::Float64, ϕ::Float64, k::Float64) = 1/IS_HS_Sticky(τ, ϕ, k)
+S_HS_Sticky(ϕ::Float64, τ::Float64, k::Float64) = 1/IS_HS_Sticky(ϕ, τ, k)
