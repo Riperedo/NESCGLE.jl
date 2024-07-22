@@ -10,7 +10,7 @@ Computes the inverse of the static structure factor of a Stucky Hard Sphere.
 
 Contributed by O. Joquín-Jaime
 """
-function IS_HS_Sticky(ϕ::Float64, τ::Float64,, k::Float64)
+function IS_HS_Sticky(ϕ::Float64, τ::Float64, k::Float64)
     # Baxter factorization parameters
     c = (1.0 + 0.5 * ϕ) / (1.0 - ϕ)^2
     b = (ϕ / (1.0 - ϕ)) + τ
