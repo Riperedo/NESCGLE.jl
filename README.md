@@ -37,12 +37,12 @@ and if no errors appear then your instalation was sussesful.
 Inside a file with `.jl` ending type the following
 ```julia
 using NESCGLE
-
-# Input_HS(ϕ :: Float64, k :: Array{Float64}; VW = false :: Bool)
-k = collect(0.0:0.1:15*π)
+Nk = 200
+kmax = 15*π; dk = kmax/Nk
+k = dk*(collect(1:Nk) .- 0.5)
 ϕ = 0.5
-I = Input_HS(ϕ, k)
-S = structure_factor(I)
+sm = SM_HS(ϕ, k)
+S = structure_factor(sm)
 save_data("sdk.dat", [k S])
 ```
 and run it in Julia's terminal as follows
