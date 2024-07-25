@@ -37,8 +37,8 @@ and if no errors appear then your instalation was sussesful.
 Inside a file with `.jl` ending type the following
 ```julia
 using NESCGLE
-Nk = 200
-kmax = 15*π; dk = kmax/Nk
+
+Nk = 200; kmax = 15*π; dk = kmax/Nk
 k = dk*(collect(1:Nk) .- 0.5)
 ϕ = 0.5
 sm = SM_HS(ϕ, k)
@@ -66,9 +66,14 @@ The result will be
 
 The static structure factor is the main input to solve the equations of the theory. For this, we simply write in our script:
 ```julia
-τ, Fs, F, Δζ, Δη, D, W = SCGLE(I)
+using NESCGLE
 
-save_data("Eq_Dynamics.dat", [τ Fs F Δζ Δη D W])
+Nk = 200; kmax = 15*π; dk = kmax/Nk
+k = dk*(collect(1:Nk) .- 0.5)
+ϕ = 0.5
+sm = SM_HS(ϕ, k)
+pp = StaticProcess(sm.params)
+NESCGLEsolver(sm, pp)
 ```
 after some processing time we obtain microscopic quantities such as the intermediate scattering function, the mean square displacement, the diffusion coefficient or even the shear relaxation viscosity. 
 By example, we can plot the mean squared displacemen as
@@ -89,12 +94,15 @@ Unlike a state of thermodynamic equilibrium, a system out of equilibrium needs a
 Additionally, we need to specify the process preparation protocol. We currently have three types of processes: instantaneous processes and processes with finite cooling.
 So, for a compression of hard spheres we need to write:
 ```julia
-k = collect(0.0:0.1:15*π)
-ϕⁱ = 0.5
-ϕᶠ = 0.6
-I = Input_HS(ϕⁱ, k)
-F = Input_HS(ϕᶠ, k)
-InstantaneousProcess(I, F)
+using NESCGLE
+
+Nk = 200; kmax = 15*π; dk = kmax/Nk
+k = dk*(collect(1:Nk) .- 0.5)
+ϕi = 0.5
+ϕf = 0.6
+sm = SM_HS(ϕ, k)
+pp = InstantaneousProcess([ϕi, 1.0], [ϕf, 1.0])
+NESCGLEsolver(sm, pp)
 ```
 In your terminal, you will find information about the status of the process:
 ```
