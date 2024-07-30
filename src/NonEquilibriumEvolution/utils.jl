@@ -180,7 +180,11 @@ function saving_options(SF::Bool, TP::Bool, tw::Bool)
     return saving_options(SF, TP, tw, folder_creation)
 end
 
+"""
+    save_files(sol, sm::StabilityMatrix, pp::PreparationProtocol; so=saving_options(), path = "")
 
+Function to save the NESCGLE solution as a function of the stability matrix and the preparation protocol.
+"""
 function save_files(sol, sm::StabilityMatrix, pp::PreparationProtocol; so=saving_options(), path = "")
     # making saving folders
     if so.folder_creation && path == ""
@@ -227,3 +231,20 @@ function save_files(sol, sm::StabilityMatrix, pp::PreparationProtocol; so=saving
         save_data(path*"waiting_times.dat", [t global_u local_u bI η τs τc γI L dL idx], header = "t\tglobal_u\tlocal_u\tbI\tη\tτs\tτc\tγI\tΛ\t∂Λ\tidx", flag = false)
     end
 end
+
+function StaticProcess(sm::StabilityMatrix)
+    return StaticProperties(sm.params)
+end
+
+function InstantaneousProcess(sm::StabilityMatrix, ℇ::StabilityMatrix)
+    return InstantaneousProcess(sm.params, ℇ.params)
+end
+
+function FiniteRate(sm::StabilityMatrix, ℇ::StabilityMatrix, α::Float64; N=30)
+    return FiniteRate(sm.params, ℇ.params, α, N=N)
+end
+
+function Hysteresis(sm::StabilityMatrix, ℇ::StabilityMatrix, α::Float64; N=30)
+    return Hysteresis(sm.params, ℇ.params, α, N=N)
+end
+
