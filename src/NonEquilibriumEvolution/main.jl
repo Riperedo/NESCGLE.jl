@@ -6,36 +6,6 @@ include("transport_properties.jl")
 include("utils.jl")
 
 @doc"""
-    saving_options(SF::Bool, TP::Bool, tw::Bool, folder_creation::Bool)
-
-A type representing the options for saving different aspects of the NESCGLE computation results.
-
-# Fields
-- `SF::Bool`: Indicates whether to save the structure factor.
-- `TP::Bool`: Indicates whether to save the transport properties.
-- `tw::Bool`: Indicates whether to save the waiting times.
-- `folder_creation::Bool`: Indicates whether to create a folder for saving the results.
-
-# Example
-```julia
-options = saving_options(true, false, true, true)
-```
-"""
-struct saving_options 
-    SF::Bool # Structure factor
-    TP::Bool # Transport properties
-    tw::Bool # Waiting times
-    folder_creation::Bool # folder creation
-end
-
-saving_options() = saving_options(true,true,true,true)
-
-function saving_options(SF::Bool, TP::Bool, tw::Bool)
-    folder_creation = SF || TP || tw
-    return saving_options(SF, TP, tw, folder_creation)
-end
-
-@doc"""
     waiting_times(n::Integer, N::Integer, t0::Float64) -> ExponentialGrid
 
 Generate an exponential grid of waiting times for the NESCGLE computation.
@@ -100,41 +70,44 @@ NESCGLEsolver(sm, pp, so = )
 ```
 
 """
-function NESCGLEsolver(sm::StabilityMatrix, pp::PreparationProtocol; so=saving_options(), tw = waiting_times(), path = "")
+function NESCGLEsolver(sm::StabilityMatrix, pp::PreparationProtocol; tw = waiting_times(), mute = false)
     @assert length(sm.params) == length(pp.process[1])
 
-    # making saving folders
-    if so.folder_creation && path == ""
-        path = make_directories(sm, pp)
-    elseif so.folder_creation && path != ""
-        make_directory(path)
-    end # end if
+    # Dictionary output
+    Local = Dict()
 
-    # Initial evolution
-    printstyled("Current process: ", color=:light_green)
-    printstyled("$(pp.str)\n", color=:red)
-    printstyled("System: ", color=:light_green)
-    println("$(sm.system)")
-    println("Initial evolution")
+    if !mute 
+        # Initial evolution
+        printstyled("Current process: ", color=:light_green)
+        printstyled("$(pp.str)\n", color=:red)
+        printstyled("System: ", color=:light_green)
+        println("$(sm.system)")
+        println("Initial evolution")
+    end
     t₀ = 0.0
     u₀ = 0.0
 	k = wave_vector(sm)
 	Si = structure_factor(sm)
     ϕi = volume_fraction(sm)
 	τ, Fs, F, Δζ, ΔG, Δr² = SCGLE(ϕi, k, Si)#; dp = dyn_params(), k_max = 7.2)
-    if so.SF save_data(path*"SF_0.dat", [k Si], header = "k\tS", flag = false) end
-    if so.TP save_data(path*"TP_0.dat", [τ Fs F Δζ ΔG Δr²], header = "τ\tFs\tF\tΔζ\tΔG\tΔr²", flag = false) end
+    ID = string(0)
+    statics = Dict("k"=>k, "S"=>Si)
+    dynamics = Dict("tau"=>τ, "Fs"=>Fs, "F"=>F, "DZ"=>Δζ, "DG"=>ΔG, "W"=>Δr²)
+    SCS = Dict("Statics"=>statics, "Dynamics"=>dynamics) # Self-Consistent Scheme
+    Local[ID] = SCS
 
     # postprocess
 	bI = b⁻¹(τ, Δζ) # mobility
-    printstyled("b⁻¹ = ", color=:light_green)
-    printstyled("$bI\n", color=:cyan)
-    γI = gammaI(ϕi, k, Si, flag = true) # localization length
-    printstyled("γ⁻¹ = ", color=:light_green)
-    printstyled("$γI\n", color=:cyan)
+    γI = gammaI(ϕi, k, Si, flag = !mute) # localization length
     Λ, ∂Λ = Lyapunov_Stability(sm, sm)
-    printstyled("[Λ, ∂Λ] = ", color=:light_green)
-    printstyled("$([Λ, ∂Λ/bI])\n", color=:cyan)
+    if !mute
+        printstyled("b⁻¹ = ", color=:light_green)
+        printstyled("$bI\n", color=:cyan)
+        printstyled("γ⁻¹ = ", color=:light_green)
+        printstyled("$γI\n", color=:cyan)
+        printstyled("[Λ, ∂Λ] = ", color=:light_green)
+        printstyled("$([Λ, ∂Λ/bI])\n", color=:cyan)
+    end
 
     # Saving arrays
     saving_idx = 0
@@ -161,7 +134,7 @@ function NESCGLEsolver(sm::StabilityMatrix, pp::PreparationProtocol; so=saving_o
 
         # Looking for thermodynamic instabilities
 		instability = minimum(structure_factor(ℇ)) < 0.0
-        if instability 
+        if instability && !mute
             printstyled("Warning! ", color=:light_yellow)
             println("Themodynamic Instability")
         end
@@ -171,29 +144,35 @@ function NESCGLEsolver(sm::StabilityMatrix, pp::PreparationProtocol; so=saving_o
         t₀ = pp.time[idx-1]
         next_step = false
         for index in eachindex(tw)
-            printstyled("\nCurrent process: ", color=:light_green)
-            printstyled("$(pp.str)\n", color=:light_red)
-            printstyled("System: ", color=:light_green)
-            println("$(sm.system)")
-            printstyled("Params: ", color=:light_green)
-            println("$(sm.labels)")
-            printstyled("Process: ", color=:light_green)
-            println("$(sm.params) → $(ℇ.params)")
-            if instability println("Warning!\nThemodynamic Instability") end
+            if !mute
+                printstyled("\nCurrent process: ", color=:light_green)
+                printstyled("$(pp.str)\n", color=:light_red)
+                printstyled("System: ", color=:light_green)
+                println("$(sm.system)")
+                printstyled("Params: ", color=:light_green)
+                println("$(sm.labels)")
+                printstyled("Process: ", color=:light_green)
+                println("$(sm.params) → $(ℇ.params)")
+                if instability println("Warning!\nThemodynamic Instability") end
+            end
             t = minimum([pp.time[idx-1] + tw[index], pp.time[idx]])
-            printstyled("Current time interval: ", color=:light_green)
-            println("[$(pp.time[idx-1]), $(pp.time[idx])]")
-            printstyled("tw = ", color=:light_green)
-            printstyled("$t\n", color=:cyan)
-
+            if !mute
+                printstyled("Current time interval: ", color=:light_green)
+                println("[$(pp.time[idx-1]), $(pp.time[idx])]")
+                printstyled("tw = ", color=:light_green)
+                printstyled("$t\n", color=:cyan)
+            end
             # Updating time parameters
             Δt = t-t₀
             u₀ += Δt/bI
             u += Δt/bI
             S = NE_structure_factor_function(sm, ℇ, u)
             smU = update_SM(ℇ, S)
-            printstyled("u = ", color=:light_green)
-            printstyled("$u₀\n", color=:cyan)
+
+            if !mute
+                printstyled("u = ", color=:light_green)
+                printstyled("$u₀\n", color=:cyan)
+            end
 
             # Local time evolution
             k = wave_vector(smU)
@@ -204,27 +183,32 @@ function NESCGLEsolver(sm::StabilityMatrix, pp::PreparationProtocol; so=saving_o
             # postprocess
             bI = b⁻¹(τ, Δζ)
             t₀ = t
-            printstyled("b⁻¹ = ", color=:light_green)
-            printstyled("$bI\n", color=:cyan)
-            iterations, gammas, system = Asymptotic(ϕu, k, Su, flag = true)
+            iterations, gammas, system = Asymptotic(ϕu, k, Su, flag = !mute)
             if (system == "Fluid") || (system == "Zero")
                 γI = 0.0
             else
                 γI = 1/gammas[Int(maximum(iterations))]
                 arrest = true
             end
-            printstyled("γ⁻¹ = ", color=:light_green)
-            printstyled("$γI\n", color=:cyan)
 
             Λ, ∂Λ = Lyapunov_Stability(smU, ℇ)
-            printstyled("[Λ, ∂Λ] = ", color=:light_green)
-            printstyled("$([Λ, ∂Λ/bI])\n", color=:cyan)
+            if !mute
+                printstyled("b⁻¹ = ", color=:light_green)
+                printstyled("$bI\n", color=:cyan)
+                printstyled("γ⁻¹ = ", color=:light_green)
+                printstyled("$γI\n", color=:cyan)
+                printstyled("[Λ, ∂Λ] = ", color=:light_green)
+                printstyled("$([Λ, ∂Λ/bI])\n", color=:cyan)    
+            end
         
             #saving data
             if pp.time[idx] == Inf
                 saving_idx += 1
-                if so.SF save_data(path*"SF_"*string(saving_idx)*".dat", [k Su], header = "k\tS", flag = false) end
-                if so.TP save_data(path*"TP_"*string(saving_idx)*".dat", [τ Fs F Δζ ΔG Δr²], header = "τ\tFs\tF\tΔζ\tΔG\tΔr²", flag = false) end
+                ID = string(saving_idx)
+                statics = Dict("k"=>k, "S"=>Su)
+                dynamics = Dict("tau"=>τ, "Fs"=>Fs, "F"=>F, "DZ"=>Δζ, "DG"=>ΔG, "W"=>Δr²)
+                SCS = Dict("Statics"=>statics, "Dynamics"=>dynamics)
+                Local[ID] = SCS
                 append!(idx_save, saving_idx)
                 append!(t_save, t)
                 append!(global_u_save, u₀)
@@ -236,7 +220,6 @@ function NESCGLEsolver(sm::StabilityMatrix, pp::PreparationProtocol; so=saving_o
                 append!(gammaI_save, γI)
                 append!(L_save, Λ)
                 append!(dL_save, ∂Λ/bI)
-                if so.tw save_data(path*"waiting_times.dat", [t_save global_u_save local_u_save bI_save η_save τs_save τc_save gammaI_save L_save dL_save idx_save], header = "t\tglobal_u\tlocal_u\tbI\tη\tτs\tτc\tγI\tΛ\t∂Λ\tidx", flag = false) end
             end # end if
 
             # Interrupting cases
@@ -266,33 +249,40 @@ function NESCGLEsolver(sm::StabilityMatrix, pp::PreparationProtocol; so=saving_o
                 append!(gammaI_save, γI)
                 append!(L_save, Λ)
                 append!(dL_save, ∂Λ/bI)
-                if so.tw save_data(path*"waiting_times.dat", [t_save global_u_save local_u_save bI_save η_save τs_save τc_save gammaI_save L_save dL_save idx_save], header = "t\tglobal_u\tlocal_u\tbI\tη\tτs\tτc\tγI\tΛ\t∂Λ\tidx", flag = false) end
                 break
             end # end if
         end # end for
     end # end for
     if arrest
-        println()
-        printstyled("Arrest detected, computing asymptotics\n", color=:light_yellow)
+        if !mute
+            println()
+            printstyled("Arrest detected, computing asymptotics\n", color=:light_yellow)
+        end
         uᵃ = Asymptotic_NE(sm, ℇ, 2*local_u_save[end]; flag= false)
         Sᵃ = NE_structure_factor_function(sm, ℇ, uᵃ)
         smᵃ = update_SM(ℇ, Sᵃ)
         k = wave_vector(smᵃ)
         S = Sᵃ.(k)
         ϕ = volume_fraction(ℇ)
-        γIᵃ = gammaI(ϕ, k, S; flag = true)
+        τ, Fs, F, Δζ, ΔG, Δr² = SCGLE(ϕ, k, S)
+        ID = "A"
+        statics = Dict("k"=>k, "S"=>S)
+        dynamics = Dict("tau"=>τ, "Fs"=>Fs, "F"=>F, "DZ"=>Δζ, "DG"=>ΔG, "W"=>Δr²)
+        SCS = Dict("Statics"=>statics, "Dynamics"=>dynamics)
+        Local[ID] = SCS
+        
+        γIᵃ = gammaI(ϕ, k, S; flag = !mute)
         # updating asymptotics
-        if so.SF save_data(path*"SF_A.dat", [k S], header = "k\tS", flag = false) end
         global_u_save[end] = global_u_save[end] - local_u_save[end] + uᵃ
         local_u_save[end] = uᵃ
         gammaI_save[end] = γIᵃ
-        printstyled("uᵃ = ", color=:light_green)
-        printstyled("$uᵃ\n", color=:cyan)
-        printstyled("γIᵃ = ", color=:light_green)
-        printstyled("$γIᵃ\n", color=:cyan)
+        if !mute
+            printstyled("uᵃ = ", color=:light_green)
+            printstyled("$uᵃ\n", color=:cyan)
+            printstyled("γIᵃ = ", color=:light_green)
+            printstyled("$γIᵃ\n", color=:cyan)
+        end
     end
-    if so.tw 
-        println()
-        save_data(path*"waiting_times.dat", [t_save global_u_save local_u_save bI_save η_save τs_save τc_save gammaI_save L_save dL_save idx_save], header = "t\tglobal_u\tlocal_u\tbI\tη\tτs\tτc\tγI\tΛ\t∂Λ\tidx", flag = false)
-    end
+    Global = Dict("tw"=>t_save, "global_u"=>global_u_save, "local_u"=>local_u_save, "bI"=>bI_save, "eta"=> η_save, "tau_s"=>τs_save, "tau_c"=> τc_save, "gammaI"=> gammaI_save, "L"=> L_save, "dL"=> dL_save, "index"=>idx_save)
+    return Dict("local"=>Local, "global"=>Global)
 end
