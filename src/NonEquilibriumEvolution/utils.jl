@@ -149,3 +149,81 @@ function make_directories(sm::StabilityMatrix, pp::PreparationProtocol)
     end
     return path
 end
+
+@doc"""
+    saving_options(SF::Bool, TP::Bool, tw::Bool, folder_creation::Bool)
+
+A type representing the options for saving different aspects of the NESCGLE computation results.
+
+# Fields
+- `SF::Bool`: Indicates whether to save the structure factor.
+- `TP::Bool`: Indicates whether to save the transport properties.
+- `tw::Bool`: Indicates whether to save the waiting times.
+- `folder_creation::Bool`: Indicates whether to create a folder for saving the results.
+
+# Example
+```julia
+options = saving_options(true, false, true, true)
+```
+"""
+struct saving_options 
+    SF::Bool # Structure factor
+    TP::Bool # Transport properties
+    tw::Bool # Waiting times
+    folder_creation::Bool # folder creation
+end
+
+saving_options() = saving_options(true,true,true,true)
+
+function saving_options(SF::Bool, TP::Bool, tw::Bool)
+    folder_creation = SF || TP || tw
+    return saving_options(SF, TP, tw, folder_creation)
+end
+
+
+function save_files(sol, sm::StabilityMatrix, pp::PreparationProtocol; so=saving_options(), path = "")
+    # making saving folders
+    if so.folder_creation && path == ""
+        path = make_directories(sm, pp)
+    elseif so.folder_creation && path != ""
+        make_directory(path)
+    end # end if
+
+    for key in keys(sol["local"])
+        #keys(sol["local"][key]) : ["Dynamics", "Statics"]
+        #keys(sol["local"][key]["Statics"]) : ["S", "k"]
+        #keys(sol["local"][key]["Dynamics"]) : ["DZ", "W", "DG", "Fs", "tau", "F"]
+        if so.SF 
+            statics = sol["local"][key]["Statics"]
+            k = statics["k"]
+            S = statics["S"]
+            save_data(path*"SF_"*key*".dat", [k S], header = "k\tS", flag = false)
+        end
+        if so.TP 
+            dynamics = sol["local"][key]["Dynamics"]
+            τ = dynamics["tau"]
+            Fs = dynamics["Fs"]
+            F = dynamics["F"]
+            Δζ = dynamics["DZ"]
+            ΔG = dynamics["DG"]
+            Δr² = dynamics["W"]
+            save_data(path*"TP_"*key*".dat", [τ Fs F Δζ ΔG Δr²], header = "τ\tFs\tF\tΔζ\tΔG\tΔr²", flag = false)
+        end
+    end
+
+    if so.tw
+        #keys(sol["global"]):["local_u", "dL", "L", "tw", "tau_s", "tau_c", "global_u", "eta", "index", "gammaI", "bI"]
+        t = sol["global"]["tw"]
+        global_u = sol["global"]["local_u"]
+        local_u = sol["global"]["global_u"]
+        bI = sol["global"]["bI"]
+        η = sol["global"]["eta"]
+        τs = sol["global"]["tau_s"]
+        τc = sol["global"]["tau_c"]
+        γI = sol["global"]["gammaI"]
+        L = sol["global"]["L"]
+        dL = sol["global"]["dL"]
+        idx = sol["global"]["index"]
+        save_data(path*"waiting_times.dat", [t global_u local_u bI η τs τc γI L dL idx], header = "t\tglobal_u\tlocal_u\tbI\tη\tτs\tτc\tγI\tΛ\t∂Λ\tidx", flag = false)
+    end
+end
