@@ -223,7 +223,7 @@ function NESCGLEsolver(sm::StabilityMatrix, pp::PreparationProtocol; so=saving_o
             #saving data
             if pp.time[idx] == Inf
                 saving_idx += 1
-                if so.SF save_data(path*"SF_"*string(saving_idx)*".dat", [k Si], header = "k\tS", flag = false) end
+                if so.SF save_data(path*"SF_"*string(saving_idx)*".dat", [k Su], header = "k\tS", flag = false) end
                 if so.TP save_data(path*"TP_"*string(saving_idx)*".dat", [τ Fs F Δζ ΔG Δr²], header = "τ\tFs\tF\tΔζ\tΔG\tΔr²", flag = false) end
                 append!(idx_save, saving_idx)
                 append!(t_save, t)
