@@ -233,7 +233,7 @@ function save_files(sol, sm::StabilityMatrix, pp::PreparationProtocol; so=saving
 end
 
 function StaticProcess(sm::StabilityMatrix)
-    return StaticProperties(sm.params)
+    return StaticProcess(sm.params)
 end
 
 function InstantaneousProcess(sm::StabilityMatrix, ℇ::StabilityMatrix)
