@@ -71,7 +71,7 @@ using NESCGLE
 Nk = 200; kmax = 15*π; dk = kmax/Nk
 k = dk*(collect(1:Nk) .- 0.5)
 ϕi = 0.5
-ϕf = 0.5
+ϕf = 0.6
 sm = SM_HS(ϕi, k)
 ℇ = SM_HS(ϕf, k)
 pp = InstantaneousProcess(sm, ℇ)
