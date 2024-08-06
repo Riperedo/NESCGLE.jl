@@ -3,6 +3,62 @@ include("postprocess.jl")
 include("asymptotic.jl")
 
 
+import ModeCouplingTheory.MemoryKernel
+
+struct SCGLEKernelP <: MemoryKernel
+    k::Vector{Float64}
+    λ::Vector{Float64}
+    M::Vector{Float64}
+    prefactor::Float64
+end
+
+# The constructor for the MCTKernel
+function SCGLEKernelP(ϕ, k_array, S_array)
+    Δk = k_array[2] - k_array[1]
+    #kc = 1.305*2π
+    kc = 1.302*2π
+    prefactor = Δk/(36π*ϕ)
+    Nk = length(k_array)
+    Nk2 = div(Nk,2)
+    λ = zeros(Nk)
+    M = zeros(Nk2)
+    for (i, k) in enumerate(k_array[1:Nk2])
+        λ[i] = 1/(1+(k/kc)^2)
+        λ[Nk2+i] = 1/(1+(k/kc)^2)
+        S = S_array[Nk2+i]
+        M[i] = (k^4)*(1-1/S)^2
+    end
+    return SCGLEKernel(k_array, λ, M, prefactor)
+end
+
+import ModeCouplingTheory.evaluate_kernel!
+
+function evaluate_kernel!(out::Diagonal, kernel::SCGLEKernelP, F, t)
+    out.diag .= zero(eltype(out.diag)) # set the output array to zero
+    k_array = kernel.k
+    M = kernel.M
+    λ = kernel.λ
+    Nk = length(k_array)
+    Nk2 = div(Nk,2)
+    # Δζ(q) integral 
+    Δζ = 0.0
+    for i in 1:Nk2
+        Δζ += M[i]*F[i]*F[Nk2+i]
+    end
+    Δζ *= kernel.prefactor
+    for i = 1:Nk
+        out.diag[i] += λ[i]*Δζ
+    end
+end
+
+import ModeCouplingTheory.evaluate_kernel
+function evaluate_kernel(kernel::SCGLEKernelP, F, t)
+    out = Diagonal(similar(F)) # we need it to produce a diagonal matrix
+    evaluate_kernel!(out, kernel, F, t) # call the inplace version
+    return out
+end
+
+
 """
     dyn_params(Δt::Float64, t_max::Float64, N::Integer, tolerance::Float64, verbose::Bool)
 
@@ -58,7 +114,7 @@ function SCGLE(ϕ::Float64, k_array::Vector{Float64}, S_array::Vector{Float64}; 
     # Initial config
     ∂F0 = zeros(2*Nk); α = 0.0; β = 1.0; γ = @. k^2/S; δ = 0.0
 
-    kernel = SCGLEKernel(ϕ, k, S)
+    kernel = SCGLEKernelP(ϕ, k, S)
     equation = MemoryEquation(α, β, γ, δ, S, ∂F0, kernel)
     solver = TimeDoublingSolver(Δt=dp.Δt, t_max=dp.t_max, 
         N = dp.N, tolerance=dp.tolerance, verbose=dp.verbose)
