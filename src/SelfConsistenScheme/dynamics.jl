@@ -28,7 +28,7 @@ function SCGLEKernelP(ϕ, k_array, S_array)
         S = S_array[Nk2+i]
         M[i] = (k^4)*(1-1/S)^2
     end
-    return SCGLEKernel(k_array, λ, M, prefactor)
+    return SCGLEKernelP(k_array, λ, M, prefactor)
 end
 
 import ModeCouplingTheory.evaluate_kernel!
