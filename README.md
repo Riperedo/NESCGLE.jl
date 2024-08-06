@@ -74,7 +74,7 @@ k = dk*(collect(1:Nk) .- 0.5)
 ϕf = 0.6
 sm = SM_HS(ϕi, k)
 ℇ = SM_HS(ϕf, k)
-pp = InstantaneousProcess(sm, ℇ)
+pp = InstantaneousProcess(sm.params, ℇ.params)
 sol = NESCGLEsolver(sm, pp)
 save_files(sol, sm, pp)
 ```
