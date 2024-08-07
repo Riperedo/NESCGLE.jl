@@ -65,7 +65,7 @@ function MSD(k::Vector{Float64}, sol, solver)
     return msdsol.t, msdsol.F, msdkernel.Δζ
 end
 
-@doc"""
+"""
 ΔG = (kBT/60π²)∫dk k⁴[(1/S)(∂S/∂k)]²[(F/S)]^2
 """
 function get_ΔG(sol, k_array::Vector{Float64}, Sₖ::Vector{Float64})
