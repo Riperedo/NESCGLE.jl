@@ -23,7 +23,7 @@ function ChebyshevGrids(a :: Float64, b :: Float64, N :: Integer)
 	return x, w
 end
 
-@doc"""
+"""
     UniformGrid(a :: Float64, b :: Float64, step :: Float64) = collect(a:step:b)
 Returns a uniform grid. Is exactly the same as the fucntion `collect`.
 # Arguments
