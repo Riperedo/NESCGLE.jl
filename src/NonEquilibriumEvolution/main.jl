@@ -5,7 +5,7 @@ include("../utils/API.jl")
 include("transport_properties.jl")
 include("utils.jl")
 
-@doc"""
+"""
     waiting_times(n::Integer, N::Integer, t0::Float64) -> ExponentialGrid
 
 Generate an exponential grid of waiting times for the NESCGLE computation.
