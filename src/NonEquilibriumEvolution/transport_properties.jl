@@ -32,7 +32,7 @@ function b⁻¹(t::Vector{Float64}, Δζ::Vector{Any})
 	return bI
 end
 
-@doc """Computes the α-relaxation time.
+"""Computes the α-relaxation time.
 """
 function τα(τ::Vector{Float64}, fs::Vector{Float64})
 	idx = fs.>exp(-1)
