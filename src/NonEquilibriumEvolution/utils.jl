@@ -150,7 +150,7 @@ function make_directories(sm::StabilityMatrix, pp::PreparationProtocol)
     return path
 end
 
-@doc"""
+"""
     saving_options(SF::Bool, TP::Bool, tw::Bool, folder_creation::Bool)
 
 A type representing the options for saving different aspects of the NESCGLE computation results.
