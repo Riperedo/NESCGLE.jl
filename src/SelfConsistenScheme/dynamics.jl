@@ -15,8 +15,8 @@ end
 # The constructor for the MCTKernel
 function SCGLEKernelP(ϕ, k_array, S_array)
     Δk = k_array[2] - k_array[1]
-    #kc = 1.305*2π
-    kc = 1.302*2π
+    kc = 1.305*2π
+    #kc = 1.302*2π
     prefactor = Δk/(36π*ϕ)
     Nk = length(k_array)
     Nk2 = div(Nk,2)
