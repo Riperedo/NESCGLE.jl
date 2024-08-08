@@ -143,7 +143,7 @@ function make_directories(sm::StabilityMatrix, pp::PreparationProtocol)
             if sm.params[idx] == param_1
                 path = make_directory(path*label*"_"*complete_str(param_1)*"_to_"*complete_str(param_end))
             else
-                path = make_directory(path*label*"_"*complete_str(param_2)*"_to_"*complete_str(param_1))
+                path = make_directory(path*label*"_"*complete_str(param_end)*"_to_"*complete_str(param_1))
             end
         end
     end
