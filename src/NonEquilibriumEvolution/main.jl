@@ -188,7 +188,7 @@ function NESCGLEsolver(sm::StabilityMatrix, pp::PreparationProtocol; tw = waitin
                 γI = 0.0
             else
                 γI = 1/gammas[Int(maximum(iterations))]
-                arrest = true
+                #arrest = true
             end
 
             Λ, ∂Λ = Lyapunov_Stability(smU, ℇ)
@@ -225,11 +225,11 @@ function NESCGLEsolver(sm::StabilityMatrix, pp::PreparationProtocol; tw = waitin
             # Interrupting cases
             if pp.time[idx-1] + tw[index] >= pp.time[idx] 
                 next_step = true
-            elseif t > 1e12 
+            elseif t > 1e14 
                 next_step = true
             elseif Fs[end] > exp(-1) 
                 next_step = true
-            elseif bI > 1e12
+            elseif bI > 1e14
                 next_step = true
                 break
             end # end if
