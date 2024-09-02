@@ -225,10 +225,13 @@ function NESCGLEsolver(sm::StabilityMatrix, pp::PreparationProtocol; tw = waitin
             # Interrupting cases
             if pp.time[idx-1] + tw[index] >= pp.time[idx] 
                 next_step = true
+		break
             elseif t > 1e14 
                 next_step = true
+		break
             elseif Fs[end] > exp(-1) 
                 next_step = true
+		break
             elseif bI > 1e14
                 next_step = true
                 break
