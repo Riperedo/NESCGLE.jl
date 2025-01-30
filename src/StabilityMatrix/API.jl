@@ -131,7 +131,7 @@ Constructor for an input of hard spheres with Sort Attractions and Long Repultio
 - `k::Float64`: Wave vector array.
 """
 function SM_SALR(ϕ::Float64, ϵ₁::Float64, z₁::Float64, ϵ₂::Float64, z₂::Float64, k::Array{Float64})
-	params[ϕ, ϵ₁, z₁, ϵ₂, z₂]
+	params = [ϕ, ϵ₁, z₁, ϵ₂, z₂]
 	labels = ["phi", "epsilon1", "z1", "epsilon2", "z2"]
 	S = S_RPA(params; potential = "SALR")
 	return StabilityMatrix(1, params, labels, S, k, "SALR")
